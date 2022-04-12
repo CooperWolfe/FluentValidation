@@ -19,9 +19,10 @@
 namespace FluentValidation.Validators {
 	using System;
 	using System.Globalization;
-	using Resources;
 
 	public class LengthValidator<T> : PropertyValidator<T,string>, ILengthValidator {
+		private readonly Configuration configuration;
+
 		public override string Name => "LengthValidator";
 
 		public int Min { get; }
@@ -30,18 +31,24 @@ namespace FluentValidation.Validators {
 		public Func<T, int> MinFunc { get; set; }
 		public Func<T, int> MaxFunc { get; set; }
 
-		public LengthValidator(int min, int max) {
+		public LengthValidator(int min, int max, Action<Configuration> configure = null) {
 			Max = max;
 			Min = min;
+
+			configuration = new Configuration();
+			configure?.Invoke(configuration);
 
 			if (max != -1 && max < min) {
 				throw new ArgumentOutOfRangeException(nameof(max), "Max should be larger than min.");
 			}
 		}
 
-		public LengthValidator(Func<T, int> min, Func<T, int> max) {
+		public LengthValidator(Func<T, int> min, Func<T, int> max, Action<Configuration> configure = null) {
 			MaxFunc = max;
 			MinFunc = min;
+
+			configuration = new Configuration();
+			configure?.Invoke(configuration);
 		}
 
 		public override bool IsValid(ValidationContext<T> context, string value) {
@@ -55,8 +62,14 @@ namespace FluentValidation.Validators {
 				min = MinFunc(context.InstanceToValidate);
 			}
 
-			var stringInfo = new StringInfo(value);
-			int length = stringInfo.LengthInTextElements;
+			int length;
+			if (configuration.UseLengthInTextElements) {
+				var stringInfo = new StringInfo(value);
+				length = stringInfo.LengthInTextElements;
+			}
+			else {
+				length = value.Length;
+			}
 
 			if (length < min || (length > max && max != -1)) {
 				context.MessageFormatter
@@ -73,17 +86,24 @@ namespace FluentValidation.Validators {
 		protected override string GetDefaultMessageTemplate(string errorCode) {
 			return Localized(errorCode, Name);
 		}
+
+		public class Configuration {
+			internal Configuration() {
+				UseLengthInTextElements = false;
+			}
+			public bool UseLengthInTextElements { get; set; }
+		}
 	}
 
 	public class ExactLengthValidator<T> : LengthValidator<T>, IExactLengthValidator {
 		public override string Name => "ExactLengthValidator";
 
-		public ExactLengthValidator(int length) : base(length,length) {
+		public ExactLengthValidator(int length, Action<Configuration> configure = null) : base(length,length,configure) {
 
 		}
 
-		public ExactLengthValidator(Func<T, int> length)
-			: base(length, length) {
+		public ExactLengthValidator(Func<T, int> length, Action<Configuration> configure = null)
+			: base(length, length, configure) {
 
 		}
 
@@ -95,13 +115,13 @@ namespace FluentValidation.Validators {
 	public class MaximumLengthValidator<T> : LengthValidator<T>, IMaximumLengthValidator {
 		public override string Name => "MaximumLengthValidator";
 
-		public MaximumLengthValidator(int max)
-			: base(0, max) {
+		public MaximumLengthValidator(int max, Action<Configuration> configure = null)
+			: base(0, max, configure) {
 
 		}
 
-		public MaximumLengthValidator(Func<T, int> max)
-			: base(obj => 0, max) {
+		public MaximumLengthValidator(Func<T, int> max, Action<Configuration> configure = null)
+			: base(obj => 0, max, configure) {
 
 		}
 
@@ -114,12 +134,12 @@ namespace FluentValidation.Validators {
 
 		public override string Name => "MinimumLengthValidator";
 
-		public MinimumLengthValidator(int min)
-			: base(min, -1) {
+		public MinimumLengthValidator(int min, Action<Configuration> configure = null)
+			: base(min, -1, configure) {
 		}
 
-		public MinimumLengthValidator(Func<T, int> min)
-			: base(min, obj => -1) {
+		public MinimumLengthValidator(Func<T, int> min, Action<Configuration> configure = null)
+			: base(min, obj => -1, configure) {
 
 		}
 

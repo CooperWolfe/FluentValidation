@@ -144,9 +144,37 @@ namespace FluentValidation {
 		/// <param name="ruleBuilder">The rule builder on which the validator should be defined</param>
 		/// <param name="min"></param>
 		/// <param name="max"></param>
+		/// <param name="configure">A callback used to configure how the length should be calculated</param>
+		/// <returns></returns>
+		public static IRuleBuilderOptions<T, string> Length<T>(this IRuleBuilder<T, string> ruleBuilder, int min, int max, Action<LengthValidator<T>.Configuration> configure) {
+			return ruleBuilder.SetValidator(new LengthValidator<T>(min, max, configure));
+		}
+
+		/// <summary>
+		/// Defines a length validator on the current rule builder, but only for string properties.
+		/// Validation will fail if the length of the string is outside of the specified range. The range is inclusive.
+		/// </summary>
+		/// <typeparam name="T">Type of object being validated</typeparam>
+		/// <param name="ruleBuilder">The rule builder on which the validator should be defined</param>
+		/// <param name="min"></param>
+		/// <param name="max"></param>
 		/// <returns></returns>
 		public static IRuleBuilderOptions<T, string> Length<T>(this IRuleBuilder<T, string> ruleBuilder, Func<T, int> min, Func<T, int> max) {
 			return ruleBuilder.SetValidator(new LengthValidator<T>(min, max));
+		}
+
+		/// <summary>
+		/// Defines a length validator on the current rule builder, but only for string properties.
+		/// Validation will fail if the length of the string is outside of the specified range. The range is inclusive.
+		/// </summary>
+		/// <typeparam name="T">Type of object being validated</typeparam>
+		/// <param name="ruleBuilder">The rule builder on which the validator should be defined</param>
+		/// <param name="min"></param>
+		/// <param name="max"></param>
+		/// <param name="configure">A callback used to configure how the length should be calculated</param>
+		/// <returns></returns>
+		public static IRuleBuilderOptions<T, string> Length<T>(this IRuleBuilder<T, string> ruleBuilder, Func<T, int> min, Func<T, int> max, Action<LengthValidator<T>.Configuration> configure) {
+			return ruleBuilder.SetValidator(new LengthValidator<T>(min, max, configure));
 		}
 
 		/// <summary>
@@ -168,9 +196,35 @@ namespace FluentValidation {
 		/// <typeparam name="T">Type of object being validated</typeparam>
 		/// <param name="ruleBuilder">The rule builder on which the validator should be defined</param>
 		/// <param name="exactLength"></param>
+		/// <param name="configure">A callback used to configure how the length should be calculated</param>
+		/// <returns></returns>
+		public static IRuleBuilderOptions<T, string> Length<T>(this IRuleBuilder<T, string> ruleBuilder, int exactLength, Action<LengthValidator<T>.Configuration> configure) {
+			return ruleBuilder.SetValidator(new ExactLengthValidator<T>(exactLength, configure));
+		}
+
+		/// <summary>
+		/// Defines a length validator on the current rule builder, but only for string properties.
+		/// Validation will fail if the length of the string is not equal to the length specified.
+		/// </summary>
+		/// <typeparam name="T">Type of object being validated</typeparam>
+		/// <param name="ruleBuilder">The rule builder on which the validator should be defined</param>
+		/// <param name="exactLength"></param>
 		/// <returns></returns>
 		public static IRuleBuilderOptions<T, string> Length<T>(this IRuleBuilder<T, string> ruleBuilder, Func<T, int> exactLength) {
 			return ruleBuilder.SetValidator(new ExactLengthValidator<T>(exactLength));
+		}
+
+		/// <summary>
+		/// Defines a length validator on the current rule builder, but only for string properties.
+		/// Validation will fail if the length of the string is not equal to the length specified.
+		/// </summary>
+		/// <typeparam name="T">Type of object being validated</typeparam>
+		/// <param name="ruleBuilder">The rule builder on which the validator should be defined</param>
+		/// <param name="exactLength"></param>
+		/// <param name="configure">A callback used to configure how the length should be calculated</param>
+		/// <returns></returns>
+		public static IRuleBuilderOptions<T, string> Length<T>(this IRuleBuilder<T, string> ruleBuilder, Func<T, int> exactLength, Action<LengthValidator<T>.Configuration> configure) {
+			return ruleBuilder.SetValidator(new ExactLengthValidator<T>(exactLength, configure));
 		}
 
 		/// <summary>
@@ -199,6 +253,19 @@ namespace FluentValidation {
 
 		/// <summary>
 		/// Defines a length validator on the current rule builder, but only for string properties.
+		/// Validation will fail if the length of the string is larger than the length specified.
+		/// </summary>
+		/// <typeparam name="T">Type of object being validated</typeparam>
+		/// <param name="ruleBuilder">The rule builder on which the validator should be defined</param>
+		/// <param name="maximumLength"></param>
+		/// <param name="configure">A callback used to configure how the length should be calculated</param>
+		/// <returns></returns>
+		public static IRuleBuilderOptions<T, string> MaximumLength<T>(this IRuleBuilder<T, string> ruleBuilder, int maximumLength, Action<LengthValidator<T>.Configuration> configure) {
+			return ruleBuilder.SetValidator(new MaximumLengthValidator<T>(maximumLength, configure));
+		}
+
+		/// <summary>
+		/// Defines a length validator on the current rule builder, but only for string properties.
 		/// Validation will fail if the length of the string is less than the length specified.
 		/// </summary>
 		/// <typeparam name="T">Type of object being validated</typeparam>
@@ -207,6 +274,19 @@ namespace FluentValidation {
 		/// <returns></returns>
 		public static IRuleBuilderOptions<T, string> MinimumLength<T>(this IRuleBuilder<T, string> ruleBuilder, int minimumLength) {
 			return ruleBuilder.SetValidator(new MinimumLengthValidator<T>(minimumLength));
+		}
+
+		/// <summary>
+		/// Defines a length validator on the current rule builder, but only for string properties.
+		/// Validation will fail if the length of the string is less than the length specified.
+		/// </summary>
+		/// <typeparam name="T">Type of object being validated</typeparam>
+		/// <param name="ruleBuilder">The rule builder on which the validator should be defined</param>
+		/// <param name="minimumLength"></param>
+		/// <param name="configure">A callback used to configure how the length should be calculated</param>
+		/// <returns></returns>
+		public static IRuleBuilderOptions<T, string> MinimumLength<T>(this IRuleBuilder<T, string> ruleBuilder, int minimumLength, Action<LengthValidator<T>.Configuration> configure) {
+			return ruleBuilder.SetValidator(new MinimumLengthValidator<T>(minimumLength, configure));
 		}
 
 		/// <summary>
